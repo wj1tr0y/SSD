@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 16:21:37
+@LastEditTime: 2019-04-18 16:49:52
 '''
 from __future__ import print_function
 sys.path.append("../nvcaffe/python")
@@ -330,7 +330,8 @@ min_dim = 512
 # conv8_2 ==> 4 x 4
 # conv9_2 ==> 2 x 2
 # conv10_2 ==> 1 x 1
-mbox_source_layers = ['conv4_3', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
+
+mbox_source_layers = ['res3b_relu', 'res4b_relu', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2', 'conv10_2']
 # in percent %
 min_ratio = 10
 max_ratio = 90

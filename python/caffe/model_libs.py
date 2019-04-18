@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:23:11
-@LastEditTime: 2019-04-18 15:05:50
+@LastEditTime: 2019-04-18 16:49:01
 '''
 import os
 
@@ -510,7 +510,7 @@ def ResNet18Body(net, from_layer, use_pool5=True, use_dilation_conv5=False, **bn
     scale_prefix = 'scale_'
     scale_postfix = ''
     ConvBNLayer(net, from_layer, 'conv1', use_bn=True, use_relu=True,
-        num_output=32, kernel_size=7, pad=3, stride=4,
+        num_output=32, kernel_size=7, pad=3, stride=2,
         conv_prefix=conv_prefix, conv_postfix=conv_postfix,
         bn_prefix=bn_prefix, bn_postfix=bn_postfix,
         scale_prefix=scale_prefix, scale_postfix=scale_postfix, **bn_param)
