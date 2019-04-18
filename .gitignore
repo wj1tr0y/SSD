@@ -1,5 +1,5 @@
 ## General
-
+nvcaffe/*
 # Compiled Object files
 *.slo
 *.lo
