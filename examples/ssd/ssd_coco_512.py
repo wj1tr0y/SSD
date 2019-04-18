@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 17:23:54
+@LastEditTime: 2019-04-18 17:27:25
 '''
 from __future__ import print_function
 
@@ -84,7 +84,7 @@ def AddExtraLayers(net, use_batchnorm=True, lr_mult=1):
 
     from_layer = out_layer
     out_layer = "conv10_2"
-    ConvBNLayer(net, from_layer, out_layer, use_batchnorm, use_relu, 128, 4, 1, 1,
+    ConvBNLayer(net, from_layer, out_layer, use_batchnorm, use_relu, 128, 3, 1, 1,
       lr_mult=lr_mult)
 
     return net
