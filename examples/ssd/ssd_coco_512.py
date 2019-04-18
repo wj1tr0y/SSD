@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 18:01:53
+@LastEditTime: 2019-04-18 18:13:03
 '''
 from __future__ import print_function
 
@@ -17,6 +17,7 @@ import stat
 import subprocess
 import sys
 
+sys.path.append('./python')
 import caffe
 from caffe.model_libs import *
 from google.protobuf import text_format
@@ -603,7 +604,7 @@ if remove_old_models:
 # Create job file.
 with open(job_file, 'w') as f:
   f.write('cd {}\n'.format(caffe_root))
-  f.write('nvcaffe/build/tools/caffe train \\\n')
+  f.write('build/tools/caffe train \\\n')
   f.write('--solver="{}" \\\n'.format(solver_file))
   f.write(train_src_param)
   if solver_param['solver_mode'] == P.Solver.GPU:
