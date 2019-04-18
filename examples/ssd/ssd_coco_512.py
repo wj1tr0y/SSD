@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 17:31:08
+@LastEditTime: 2019-04-18 17:35:31
 '''
 from __future__ import print_function
 
@@ -17,7 +17,6 @@ import stat
 import subprocess
 import sys
 
-sys.path.append("../nvcaffe/python")
 import caffe
 from caffe.model_libs import *
 from google.protobuf import text_format
@@ -365,8 +364,8 @@ gpulist = gpus.split(",")
 num_gpus = len(gpulist)
 
 # Divide the mini-batch to different GPUs.
-batch_size = 32
-accum_batch_size = 32
+batch_size = 128
+accum_batch_size = 128
 iter_size = accum_batch_size / batch_size
 solver_mode = P.Solver.CPU
 device_id = 0
@@ -387,7 +386,7 @@ elif normalization_mode == P.Loss.FULL:
   base_lr *= 2000.
 
 # Evaluate on whole test set.
-num_test_image = 5000
+num_test_image = 2693
 test_batch_size = 8
 test_iter = num_test_image / test_batch_size
 
