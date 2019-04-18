@@ -6,9 +6,10 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 15:03:56
+@LastEditTime: 2019-04-18 16:20:27
 '''
 from __future__ import print_function
+sys.path.append("../nvcaffe/python")
 import caffe
 from caffe.model_libs import *
 from google.protobuf import text_format
@@ -100,7 +101,9 @@ resume_training = True
 remove_old_models = False
 
 # The database file for training data. Created by data/coco/create_data.sh
-train_data = "examples/coco/coco_train_lmdb"
+train_data = ["examples/zhili/zhili_train_lmdb", "examples/newped/newped_train_lmdb"]
+# train_data = 'examples/coco/coco_train_lmdb'
+train_data_ratio = [0.8, 0.2]
 # The database file for testing data. Created by data/coco/create_data.sh
 test_data = "examples/coco/coco_val_lmdb"
 # Specify the batch sampler.
@@ -257,14 +260,14 @@ else:
 # Modify the job name if you want.
 job_name = "SSD_{}".format(resize)
 # The name of the model. Modify it if you want.
-model_name = "VGG_coco_{}".format(job_name)
+model_name = "Res18_coco_{}".format(job_name)
 
 # Directory which stores the model .prototxt file.
-save_dir = "models/VGGNet/coco/{}".format(job_name)
+save_dir = "models/ResNet/coco/{}".format(job_name)
 # Directory which stores the snapshot of models.
-snapshot_dir = "models/VGGNet/coco/{}".format(job_name)
+snapshot_dir = "models/ResNet/coco/{}".format(job_name)
 # Directory which stores the job script and log file.
-job_dir = "jobs/VGGNet/coco/{}".format(job_name)
+job_dir = "jobs/ResNet/coco/{}".format(job_name)
 # Directory which stores the detection results.
 output_result_dir = "{}/data/mscoco/results/{}".format(os.environ['HOME'], job_name)
 
@@ -279,14 +282,14 @@ snapshot_prefix = "{}/{}".format(snapshot_dir, model_name)
 job_file = "{}/{}.sh".format(job_dir, model_name)
 
 # Stores the test image names and sizes. Created by data/coco/create_list.sh
-name_size_file = "data/coco/minival2014_name_size.txt"
+name_size_file = "data/coco/val2017_name_size.txt"
 # The pretrained model. We use the Fully convolutional reduced (atrous) VGGNet.
-pretrain_model = "models/VGGNet/VGG_ILSVRC_16_layers_fc_reduced.caffemodel"
+# pretrain_model = "models/VGGNet/VGG_ILSVRC_16_layers_fc_reduced.caffemodel"
 # Stores LabelMapItem.
 label_map_file = "data/coco/labelmap_coco.prototxt"
 
 # MultiBoxLoss parameters.
-num_classes = 81
+num_classes = 2
 share_location = True
 background_label_id=0
 train_on_diff_gt = False
@@ -440,22 +443,37 @@ det_eval_param = {
 
 ### Hopefully you don't need to change the following ###
 # Check file.
-check_if_exist(train_data)
+# check_if_exist(train_data)
 check_if_exist(test_data)
 check_if_exist(label_map_file)
-check_if_exist(pretrain_model)
+# check_if_exist(pretrain_model)
 make_if_not_exist(save_dir)
 make_if_not_exist(job_dir)
 make_if_not_exist(snapshot_dir)
 
 # Create train net.
 net = caffe.NetSpec()
-net.data, net.label = CreateAnnotatedDataLayer(train_data, batch_size=batch_size_per_device,
+if type(train_data) == str:
+    net.data, net.label = CreateAnnotatedDataLayer(train_data, batch_size=batch_size_per_device,
         train=True, output_label=True, label_map_file=label_map_file,
         transform_param=train_transform_param, batch_sampler=batch_sampler)
+else:
+    data = []
+    label = []
+    for count, train_source in enumerate(train_data):
+        batch_each = int(batch_size_per_device * train_data_ratio[count])
+        net['data'+str(count)], net['label'+str(count)] = CreateAnnotatedDataLayer(train_source, batch_size=batch_each, name='data'+str(count),
+        train=True, output_label=True, label_map_file=label_map_file,
+        transform_param=train_transform_param, batch_sampler=batch_sampler)
+        
+        data.append(net['data'+str(count)])
+        label.append(net['label'+str(count)])
 
-VGGNetBody(net, from_layer='data', fully_conv=True, reduced=True, dilated=True,
-    dropout=False)
+    net.data = L.Concat(*data, axis=0)
+    net.label = L.Concat(*label, axis=2)
+
+ResNet18Body(net, from_layer='data', use_pool5=False, use_dilation_conv5=False)
+
 
 AddExtraLayers(net, use_batchnorm, lr_mult=lr_mult)
 
@@ -494,7 +512,7 @@ mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=mbox_source
         num_classes=num_classes, share_location=share_location, flip=flip, clip=clip,
         prior_variance=prior_variance, kernel_size=3, pad=1, lr_mult=lr_mult)
 
-conf_name = "mbox_conf"
+conf_name = "mbox_conf_ft"
 if multibox_loss_param["conf_loss_type"] == P.MultiBoxLoss.SOFTMAX:
   reshape_name = "{}_reshape".format(conf_name)
   net[reshape_name] = L.Reshape(net[conf_name], shape=dict(dim=[0, -1, num_classes]))
@@ -543,7 +561,9 @@ solver = caffe_pb2.SolverParameter(
         **solver_param)
 
 with open(solver_file, 'w') as f:
+    f.writelines('store_blobs_in_old_format: true\n')
     print(solver, file=f)
+
 shutil.copy(solver_file, job_dir)
 
 max_iter = 0
@@ -555,7 +575,8 @@ for file in os.listdir(snapshot_dir):
     if iter > max_iter:
       max_iter = iter
 
-train_src_param = '--weights="{}" \\\n'.format(pretrain_model)
+train_src_param = ''
+# train_src_param = '--weights="{}" \\\n'.format(pretrain_model)
 if resume_training:
   if max_iter > 0:
     train_src_param = '--snapshot="{}_iter_{}.solverstate" \\\n'.format(snapshot_prefix, max_iter)
@@ -577,7 +598,7 @@ if remove_old_models:
 # Create job file.
 with open(job_file, 'w') as f:
   f.write('cd {}\n'.format(caffe_root))
-  f.write('./build/tools/caffe train \\\n')
+  f.write('../nvcaffe/build/tools/caffe train \\\n')
   f.write('--solver="{}" \\\n'.format(solver_file))
   f.write(train_src_param)
   if solver_param['solver_mode'] == P.Solver.GPU:
