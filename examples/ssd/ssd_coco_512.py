@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 17:16:23
+@LastEditTime: 2019-04-18 17:23:54
 '''
 from __future__ import print_function
 
@@ -104,8 +104,8 @@ resume_training = True
 remove_old_models = False
 
 # The database file for training data. Created by data/coco/create_data.sh
-train_data = ["examples/zhili/zhili_train_lmdb", "examples/newped/newped_train_lmdb"]
-# train_data = 'examples/coco/coco_train_lmdb'
+# train_data = ["examples/zhili/zhili_train_lmdb", "examples/newped/newped_train_lmdb"]
+train_data = "examples/zhili/zhili_train_lmdb"
 train_data_ratio = [0.8, 0.2]
 # The database file for testing data. Created by data/coco/create_data.sh
 test_data = "examples/coco/coco_val_lmdb"
