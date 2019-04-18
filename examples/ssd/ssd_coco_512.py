@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 17:13:30
+@LastEditTime: 2019-04-18 17:16:23
 '''
 from __future__ import print_function
 
@@ -518,7 +518,7 @@ mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=mbox_source
         prior_variance=prior_variance, kernel_size=3, pad=1, lr_mult=lr_mult)
 
 
-conf_name = "mbox_conf"
+conf_name = "_conf"
 if multibox_loss_param["conf_loss_type"] == P.MultiBoxLoss.SOFTMAX:
   reshape_name = "{}_reshape".format(conf_name)
   net[reshape_name] = L.Reshape(net[conf_name], shape=dict(dim=[0, -1, num_classes]))
