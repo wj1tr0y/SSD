@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 17:00:51
+@LastEditTime: 2019-04-18 17:13:30
 '''
 from __future__ import print_function
 
@@ -493,6 +493,7 @@ mbox_layers.append(net.label)
 net[name] = L.MultiBoxLoss(*mbox_layers, multibox_loss_param=multibox_loss_param,
         loss_param=loss_param, include=dict(phase=caffe_pb2.Phase.Value('TRAIN')),
         propagate_down=[True, True, False, False])
+print(net.to_proto())
 
 with open(train_net_file, 'w') as f:
     print('name: "{}_train"'.format(model_name), file=f)
@@ -517,7 +518,6 @@ mbox_layers = CreateMultiBoxHead(net, data_layer='data', from_layers=mbox_source
         prior_variance=prior_variance, kernel_size=3, pad=1, lr_mult=lr_mult)
 
 
-print(net.to_proto())
 conf_name = "mbox_conf"
 if multibox_loss_param["conf_loss_type"] == P.MultiBoxLoss.SOFTMAX:
   reshape_name = "{}_reshape".format(conf_name)
