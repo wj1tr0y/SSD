@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 16:20:27
+@LastEditTime: 2019-04-18 16:21:37
 '''
 from __future__ import print_function
 sys.path.append("../nvcaffe/python")
@@ -501,8 +501,8 @@ net.data, net.label = CreateAnnotatedDataLayer(test_data, batch_size=test_batch_
         train=False, output_label=True, label_map_file=label_map_file,
         transform_param=test_transform_param)
 
-VGGNetBody(net, from_layer='data', fully_conv=True, reduced=True, dilated=True,
-    dropout=False)
+ResNet18Body(net, from_layer='data', use_pool5=False, use_dilation_conv5=False)
+
 
 AddExtraLayers(net, use_batchnorm, lr_mult=lr_mult)
 
