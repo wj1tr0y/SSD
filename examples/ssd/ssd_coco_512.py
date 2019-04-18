@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 16:57:27
+@LastEditTime: 2019-04-18 17:00:51
 '''
 from __future__ import print_function
 
@@ -396,7 +396,7 @@ solver_param = {
     'base_lr': base_lr,
     'weight_decay': 0.0005,
     'lr_policy': "multistep",
-    'stepvalue': [280000, 320000, 360000],
+    'stepvalue': [140000, 300000, 340000],
     'gamma': 0.1,
     'momentum': 0.9,
     'iter_size': iter_size,
