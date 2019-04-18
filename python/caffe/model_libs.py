@@ -6,7 +6,7 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:23:11
-@LastEditTime: 2019-04-18 16:49:01
+@LastEditTime: 2019-04-18 16:53:16
 '''
 import os
 
@@ -954,7 +954,7 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
             step = steps[i]
 
         # Create location prediction layer.
-        name = "{}_mbox_loc_ft{}".format(from_layer, loc_postfix)
+        name = "{}_mbox_loc{}".format(from_layer, loc_postfix)
         num_loc_output = num_priors_per_location * 4
         if not share_location:
             num_loc_output *= num_classes
@@ -967,7 +967,7 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
         loc_layers.append(net[flatten_name])
 
         # Create confidence prediction layer.
-        name = "{}_mbox_conf_ft{}".format(from_layer, conf_postfix)
+        name = "{}_mbox_conf{}".format(from_layer, conf_postfix)
         num_conf_output = num_priors_per_location * num_classes
         ConvBNLayer(net, from_layer, name, use_bn=use_batchnorm, use_relu=False, lr_mult=lr_mult,
             num_output=num_conf_output, kernel_size=kernel_size, pad=pad, stride=1, **bn_param)
@@ -1008,10 +1008,10 @@ def CreateMultiBoxHead(net, data_layer="data", num_classes=[], from_layers=[],
 
     # Concatenate priorbox, loc, and conf layers.
     mbox_layers = []
-    name = "mbox_loc_ft"
+    name = "mbox_loc"
     net[name] = L.Concat(*loc_layers, axis=1)
     mbox_layers.append(net[name])
-    name = "mbox_conf_ft"
+    name = "mbox_conf"
     net[name] = L.Concat(*conf_layers, axis=1)
     mbox_layers.append(net[name])
     name = "mbox_priorbox"
