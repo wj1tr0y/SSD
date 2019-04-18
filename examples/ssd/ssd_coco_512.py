@@ -6,13 +6,9 @@
 @Email: jilong.wang@watrix.ai
 @Description: file content
 @Date: 2019-04-18 14:25:06
-@LastEditTime: 2019-04-18 16:49:52
+@LastEditTime: 2019-04-18 16:50:56
 '''
 from __future__ import print_function
-sys.path.append("../nvcaffe/python")
-import caffe
-from caffe.model_libs import *
-from google.protobuf import text_format
 
 import math
 import os
@@ -20,6 +16,13 @@ import shutil
 import stat
 import subprocess
 import sys
+
+sys.path.append("../nvcaffe/python")
+import caffe
+from caffe.model_libs import *
+from google.protobuf import text_format
+
+
 
 # Add extra layers on top of a "base" network (e.g. VGGNet or Inception).
 def AddExtraLayers(net, use_batchnorm=True, lr_mult=1):
